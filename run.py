@@ -6,9 +6,10 @@ import os
 import random
 from datetime import datetime
 
+prefix_var = '$'
 startTime = datetime.now() #for script uptime
 client = discord.Client()
-bot = commands.Bot(command_prefix='$', description="Ero-bot is a lewd h-manga and doujinshi bot!")
+bot = commands.Bot(command_prefix=prefix_var, description="Ero-bot is a lewd h-manga and doujinshi bot!")
 
 
 @bot.command(pass_context=True)
@@ -28,7 +29,7 @@ async def search(ctx, *, show_name : str):
                 error = True
         #There must be a better way than a bool check, but fuck it
         if error is True:
-            await bot.say('Not found! Try an exact show name or use ``$listshows``')
+            await bot.say('Not found! Try an exact show name or use ``' + prefix_var + 'listshows``')
         elif error is False:
             show = arg
             files = int(line.rstrip('\n').split('|')[1])
@@ -137,7 +138,7 @@ async def search(ctx, *, show_name : str):
 @bot.command(pass_context=True)
 async def listshows(ctx):
     """Lists every show in the database."""
-    print('User ' + str(ctx.message.author) + ' used $listshows on channel "' + str(ctx.message.channel) +'"')
+    print('User ' + str(ctx.message.author) + ' used ' + prefix_var + 'listshows on channel "' + str(ctx.message.channel) +'"')
     await bot.say('Shows in my database:')
     i = 0
     temp = []
@@ -165,7 +166,7 @@ async def listshows(ctx):
                 await bot.say(message + '\n**Page end reached**.\nIf you want to countinue type ``next``. If you want to stop, type ``exit`` instead!')
                 pick = await bot.wait_for_message(timeout=20.0, author=(ctx.message.author))
                 if pick.content.lower() == "exit":
-                    await bot.say('If you want a show added, use ``$suggest <show name>``')
+                    await bot.say('If you want a show added, use ``' + prefix_var + 'suggest <show name>``')
                     return
                 try:
                     pick.content == None
@@ -180,7 +181,7 @@ async def listshows(ctx):
                         return
             else:
                 pass
-    await bot.say('If you want a show added, use ``$suggest <show name>``')
+    await bot.say('If you want a show added, use ``' + prefix_var + 'suggest <show name>``')
 
 @bot.command(pass_context=True)
 async def suggest(ctx, *, show_name: str):
@@ -199,6 +200,18 @@ async def suggest(ctx, *, show_name: str):
             await bot.say('Unexcepted error while unziping. Please use ``$listshows`` for checking the list')
     else:
         await bot.say('Doujinshi ``' + show_name + '`` successfully added!')
+		
+@bot.command()
+async def setprefix(prefix):
+    """Changes prefix."""
+    await bot.say('Changing prefix to ``' + prefix + '``.')
+	try:
+		prefix_var = str(prefix)
+	except:
+		print('error changing prefix!')
+		await bot.say('Error changing command prefix!')
+	else:
+		await bot.say('Command prefix successfully changed to ``' + prefix + '``.')
 
 @bot.command(pass_context=True)
 async def exact(ctx, show_name : str, name : str):
@@ -221,7 +234,7 @@ async def exact(ctx, show_name : str, name : str):
                 l += files + 2
                 error = True
         if error == True:
-            await bot.say('Show not found, check show names using ``$listshows``')
+            await bot.say('Show not found, check show names using ``' + prefix_var + 'listshows``')
             return
         if error == False:
             l = l + 1
@@ -236,7 +249,7 @@ async def exact(ctx, show_name : str, name : str):
                     l = l + 1
                     error = True
             if error == True:
-                await bot.say('Doujinshi not found, check ``$search ' + show + '``!')
+                await bot.say('Doujinshi not found, check ``' + prefix_var + 'search ' + show + '``!')
 
 @bot.command()
 async def uptime():
